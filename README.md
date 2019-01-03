@@ -1,6 +1,6 @@
 # stack [![Build Status](https://travis-ci.com/ef-ds/stack.svg?branch=master)](https://travis-ci.com/ef-ds/stack) [![codecov](https://codecov.io/gh/ef-ds/stack/branch/master/graph/badge.svg)](https://codecov.io/gh/ef-ds/stack) [![Go Report Card](https://goreportcard.com/badge/github.com/ef-ds/stack)](https://goreportcard.com/report/github.com/ef-ds/stack)  [![GoDoc](https://godoc.org/github.com/ef-ds/stack?status.svg)](https://godoc.org/github.com/ef-ds/stack)
 
-Package stack implements a very fast and efficient general purpose stack data structure and is specifically optimized to perform when used by Microservices and serverless services running in production environments. Internally, stack stores the elements in a dynamic growing semi-circular doubly linked list of arrays.
+Package stack implements a very fast and efficient general purpose stack data structure that is specifically optimized to perform when used by Microservices and serverless services running in production environments. Internally, stack stores the elements in a dynamic growing semi-circular doubly linked list of arrays.
 
 
 ## Install
