@@ -42,11 +42,11 @@ func main() {
 
 Output:
 ```
-1
-2
-3
-4
 5
+4
+3
+2
+1
 ```
 
 Also refer to the [integration](integration_test.go) and [API](api_test.go) tests.
