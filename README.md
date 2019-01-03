@@ -11,7 +11,7 @@ go get -u github.com/ef-ds/stack
 
 If you are using dep:
 ```sh
-dep ensure -add github.com/ef-ds/stack@1.0.1
+dep ensure -add github.com/ef-ds/stack@1.0.0
 ```
 
 We recommend to target only released versions for production use.
