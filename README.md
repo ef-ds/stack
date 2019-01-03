@@ -28,7 +28,7 @@ import (
 )
 
 func main() {
-	var s stack.stack
+	var s stack.Stack
 
 	for i := 1; i <= 5; i++ {
 		s.Push(i)
