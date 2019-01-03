@@ -64,7 +64,7 @@ See the [benchmark tests](https://github.com/ef-ds/stack-bench-tests/blob/master
 
 
 ## Performance
-Stack has constant time (O(1)) on all its operations (Push/Pop/Back/Len). It's not amortized constant because stack never copies more than 512 (maxInternalSliceSize/sliceGrowthFactor) items and when it expands or grow, it never does so by more than 1024 (maxInternalSliceSize) items in a single operation.
+Stack has constant time (O(1)) on all its operations (Push/Pop/Back/Len). It's not amortized constant because stack never copies more than 256 (maxInternalSliceSize/sliceGrowthFactor) items and when it expands or grow, it never does so by more than 1024 (maxInternalSliceSize) items in a single operation.
 
 Stack offers either the best or very competitive performance across all test sets, suites and ranges.
 
