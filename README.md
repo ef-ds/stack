@@ -126,15 +126,15 @@ Just like the current container data structures such as [list](https://github.co
 However, the API offers two ways to iterate over the stack items. Either use "PopFront"/"PopBack" to retrieve the first current element and the second bool parameter to check for an empty queue.
 
 ```go
-for v, ok := d.Pop(); ok; v, ok = d.Pop() {
+for v, ok := s.Pop(); ok; v, ok = s.Pop() {
     // Do something with v
 }
 ```
 
 Or use "Len" and "Pop" to check for an empty stack and retrieve the first current element.
 ```go
-for d.Len() > 0 {
-    v, _ := d.Pop()
+for s.Len() > 0 {
+    v, _ := s.Pop()
     // Do something with v
 }
 ```

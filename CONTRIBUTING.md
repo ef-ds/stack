@@ -6,7 +6,6 @@ There's a number of ways you can contribute to stack:
 - Propose changes by posting [issues](https://github.com/ef-ds/stack/issues)
 - Propose changes by creating [PRs](https://github.com/ef-ds/stack/pulls)
 - Help with issues labeled ["help wanted"](https://github.com/ef-ds/stack/labels/help%20wanted)
-- Support the [proposal](https://github.com/golang/go/issues/27935) to include stack into Go's standard library
 
 If you have suggestions, open issues and do your best to describe your idea. We'll do our best to read and try to understand it. Just make sure to be clear about what you are proposing.
 
