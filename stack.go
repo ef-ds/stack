@@ -51,8 +51,9 @@ type Stack struct {
 	// In an empty stack, head and tail points to the same node.
 	tail *node
 
-	// Len holds the current stack values length.
-	len int
+	// blockLen holds the number of blocks used. blockLen doesn't
+	// consider the last block, so it (returns number of used blocks) - 1.
+	blockLen int
 }
 
 // Node represents a stack node.
@@ -81,14 +82,19 @@ func (s *Stack) Init() *Stack {
 
 // Len returns the number of elements of stack s.
 // The complexity is O(1).
-func (s *Stack) Len() int { return s.len }
+func (s *Stack) Len() int {
+	if s.tail == nil {
+		return 0
+	}
+	return (s.blockLen * maxInternalSliceSize) + len(s.tail.v)
+}
 
 // Back returns the last element of stack d or nil if the stack is empty.
 // The second, bool result indicates whether a valid value was returned;
 // if the stack is empty, false will be returnes.
 // The complexity is O(1).
 func (s *Stack) Back() (interface{}, bool) {
-	if s.len == 0 {
+	if s.tail == nil || len(s.tail.v) == 0 {
 		return nil, false
 	}
 	return s.tail.v[len(s.tail.v)-1], true
@@ -116,14 +122,15 @@ func (s *Stack) Push(v interface{}) {
 		// There's at least one unused slice between head and tail nodes.
 		n := s.tail.n
 		s.tail = n
+		s.blockLen++
 	default:
 		// No available nodes, so make one.
 		n := &node{v: make([]interface{}, 0, maxInternalSliceSize)}
 		n.p = s.tail
+		s.blockLen++
 		s.tail.n = n
 		s.tail = n
 	}
-	s.len++
 	s.tail.v = append(s.tail.v, v)
 }
 
@@ -132,10 +139,9 @@ func (s *Stack) Push(v interface{}) {
 // if the stack is empty, false will be returnes.
 // The complexity is O(1).
 func (s *Stack) Pop() (interface{}, bool) {
-	if s.len == 0 {
+	if s.tail == nil || len(s.tail.v) == 0 {
 		return nil, false
 	}
-	s.len--
 	tp := len(s.tail.v) - 1
 	vp := &s.tail.v[tp]
 	v := *vp
@@ -147,6 +153,10 @@ func (s *Stack) Pop() (interface{}, bool) {
 	default:
 		// Leave the slice unused as spare.
 		s.tail = s.tail.p
+		s.blockLen--
+		if s.blockLen < 0 {
+			s.blockLen = 0
+		}
 	}
 	return v, true
 }

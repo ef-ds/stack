@@ -236,8 +236,8 @@ func assertInvariants(t *testing.T, s *Stack, val func(i int) interface{}) {
 		if s.tail != nil {
 			fail("nil tail when zero", s.tail, nil)
 		}
-		if s.len != 0 {
-			fail("zero length when zero", s.len, 0)
+		if s.Len() != 0 {
+			fail("zero length when zero", s.Len(), 0)
 		}
 		return
 	}
@@ -290,8 +290,8 @@ func assertInvariants(t *testing.T, s *Stack, val func(i int) interface{}) {
 		// We never encountered the tail pointer.
 		t.Errorf("tail does not point to element in list")
 	}
-	if elemCount != s.len {
-		fail("element count == s.len", elemCount, s.len)
+	if elemCount != s.Len() {
+		fail("element count == s.Len()", elemCount, s.Len())
 	}
 	if smallNodeCount > 1 {
 		fail("only one first node", smallNodeCount, 1)
