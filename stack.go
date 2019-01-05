@@ -148,12 +148,5 @@ func (s *Stack) Pop() (interface{}, bool) {
 		// in the current one were removed.
 		s.tail = s.tail.p
 	}
-	// switch {
-	// case tp > 0:
-	// 	// There's space before tp.
-	// default:
-	// 	// Leave the slice unused as spare.
-	// 	s.tail = s.tail.p
-	// }
 	return v, true
 }
