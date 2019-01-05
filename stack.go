@@ -18,9 +18,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-// Package stack implements a very fast and efficient general purpose stack
-// data structure that is specifically optimized to perform when used by
-// Microservices and serverless services running in production environments.
+// Package stack implements a very fast and efficient general purpose
+// Last-In-First-Out (LIFO) stack data structure that is specifically
+// optimized to perform when used by Microservices and serverless services
+// running in production environments.
 package stack
 
 const (
@@ -41,7 +42,8 @@ const (
 	maxInternalSliceSize = 1024
 )
 
-// Stack implements an unbounded, dynamically growing stack data structure.
+// Stack implements an unbounded, dynamically growing Last-In-First-Out (LIFO)
+// stack data structure.
 // The zero value for stack is an empty stack ready to use.
 type Stack struct {
 	// Head points to the first node of the linked list.
