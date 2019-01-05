@@ -82,7 +82,7 @@ That means the [LIFO stack](https://en.wikipedia.org/wiki/Stack_(abstract_data_t
 
 
 ### Design Considerations
-Stack uses linked slices as its underlying data structure. The reason for the choice comes from two main observations of slice based stacks/queues/stacks:
+Stack uses linked slices as its underlying data structure. The reason for the choice comes from two main observations of pure slice based stacks:
 
 1. When the stack needs to expand to accommodate new values, [a new, larger slice needs to be allocated](https://en.wikipedia.org/wiki/Dynamic_array#Geometric_expansion_and_amortized_cost) and used
 2. Allocating and managing large slices is expensive, especially in an overloaded system with little available physical memory
@@ -102,10 +102,6 @@ The same scenario for stack plays out like below.
 - Add the value into the first position of the new slice, position 0
 
 The decision to use linked slices was also the result of the observation that slices goes to great length to provide predictive, indexed positions. A hash table, for instance, absolutely need this property, but not a stack. So stack completely gives up this property and focus on what really matters: add and retrieve from the edges (front/back). No copying around and repositioning of elements is needed for that. So when a slice goes to great length to provide that functionality, the whole work of allocating new arrays, copying data around is all wasted work. None of that is necessary. And this work costs dearly for large data sets as observed in the tests.
-
-While linked slices design solve the slice expansion problem very effectively, it doesn't help with many real world usage scenarios such as in a stable processing environment where small amount of items are pushed and popped from the stack in a sequential way. This is a very common scenario for [Microservices](https://en.wikipedia.org/wiki/Microservices) and [serverless](https://en.wikipedia.org/wiki/Serverless_computing) services, for instance, where the service is able to handle the current traffic without stress.
-
-To address the stable scenario in an effective way, stack keeps its internal linked arrays in a semi-circular shape. This way when items are pushed to the stack after some of them have been removed, the stack will automatically move over its tail slice back to the old head of the stack, effectively reusing the same already allocated slice. The result is a stack that will run through its ring reusing the ring to store the new values, instead of allocating new slices for the new values.
 
 
 ## Supported Data Types
