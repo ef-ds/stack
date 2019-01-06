@@ -177,7 +177,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 
 ## Roadmap
-- Build tool to help find out the combination of firstSliceSize, sliceGrowthFactor and maxInternalSliceSize that will yield the best performance
+- Build tool to help find out the combination of firstSliceSize and maxInternalSliceSize that will yield the best performance
 - Find the fastest open source stacks and add them the bench tests
 - Improve stack performance and/or efficiency by improving its design and/or implementation
 - Build a high performance safe for concurrent use version of stack
