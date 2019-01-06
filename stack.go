@@ -26,29 +26,16 @@ package stack
 
 const (
 	// firstSliceSize holds the size of the first slice.
-	firstSliceSize = 4
-
-	// sliceGrowthFactor determines by how much and how fast the first internal
-	// slice should grow. A growth factor of 4, firstSliceSize = 4 and
-	// maxInternalSliceSize = 256, the first slice will start with size 4,
-	// then 16 (4*4), then 64 (16*4), then 256 (64*4), then 1024 (256*4).
-	// The growth factor should be tweaked together with firstSliceSize and
-	// maxInternalSliceSize and for maximum efficiency.
-	// sliceGrowthFactor only applies to the very first slice creates. All other
-	// subsequent slices are created with fixed size of maxInternalSliceSize.
-	sliceGrowthFactor = 4
+	firstSliceSize = 8
 
 	// maxInternalSliceSize holds the maximum size of each internal slice.
-	maxInternalSliceSize = 1024
+	maxInternalSliceSize = 512
 )
 
 // Stack implements an unbounded, dynamically growing Last-In-First-Out (LIFO)
 // stack data structure.
 // The zero value for stack is an empty stack ready to use.
 type Stack struct {
-	// Head points to the first node of the linked list.
-	head *node
-
 	// Tail points to the last node of the linked list.
 	// In an empty stack, head and tail points to the same node.
 	tail *node
@@ -62,9 +49,6 @@ type Stack struct {
 type node struct {
 	// v holds the list of user added values in this node.
 	v []interface{}
-
-	// n points to the next node in the linked list.
-	n *node
 
 	// p points to the previous node in the linked list.
 	p *node
@@ -99,31 +83,14 @@ func (s *Stack) Back() (interface{}, bool) {
 // Push adds value v to the the back of the stack.
 // The complexity is O(1).
 func (s *Stack) Push(v interface{}) {
-	switch {
-	case s.head == nil:
-		// No nodes present yet.
-		h := &node{v: make([]interface{}, 0, firstSliceSize)}
-		h.p = h
-		s.head = h
-		s.tail = h
-	case len(s.tail.v) < cap(s.tail.v):
-		// There's room in the tail slice.
-	case cap(s.tail.v) < maxInternalSliceSize:
-		// We're on the first slice and it hasn't grown large enough yet.
-		l := len(s.tail.v)
-		nv := make([]interface{}, l, l*sliceGrowthFactor)
-		copy(nv, s.tail.v)
-		s.tail.v = nv
-	case s.tail.n != nil:
-		// There's at least one unused slice between head and tail nodes.
-		n := s.tail.n
-		s.tail = n
-	default:
-		// No available nodes, so make one.
-		n := &node{v: make([]interface{}, 0, maxInternalSliceSize)}
-		n.p = s.tail
-		s.tail.n = n
-		s.tail = n
+	if s.tail == nil {
+		s.tail = &node{v: make([]interface{}, 0, firstSliceSize)}
+		s.tail.p = s.tail
+	} else if len(s.tail.v) >= maxInternalSliceSize {
+		s.tail = &node{
+			v: make([]interface{}, 0, maxInternalSliceSize),
+			p: s.tail,
+		}
 	}
 	s.len++
 	s.tail.v = append(s.tail.v, v)
@@ -137,6 +104,7 @@ func (s *Stack) Pop() (interface{}, bool) {
 	if s.len == 0 {
 		return nil, false
 	}
+
 	s.len--
 	tp := len(s.tail.v) - 1
 	vp := &s.tail.v[tp]
@@ -144,9 +112,7 @@ func (s *Stack) Pop() (interface{}, bool) {
 	*vp = nil // Avoid memory leaks
 	s.tail.v = s.tail.v[:tp]
 	if tp <= 0 {
-		// Move to the previous slice as all elements
-		// in the current one were removed.
-		s.tail = s.tail.p
+		s.tail = s.tail.p // Move to the previous slice.
 	}
 	return v, true
 }

@@ -1,6 +1,6 @@
 # stack [![Build Status](https://travis-ci.com/ef-ds/stack.svg?branch=master)](https://travis-ci.com/ef-ds/stack) [![codecov](https://codecov.io/gh/ef-ds/stack/branch/master/graph/badge.svg)](https://codecov.io/gh/ef-ds/stack) [![Go Report Card](https://goreportcard.com/badge/github.com/ef-ds/stack)](https://goreportcard.com/report/github.com/ef-ds/stack)  [![GoDoc](https://godoc.org/github.com/ef-ds/stack?status.svg)](https://godoc.org/github.com/ef-ds/stack)
 
-Package stack implements a very fast and efficient general purpose Last-In-First-Out (LIFO) stack data structure that is specifically optimized to perform when used by Microservices and serverless services running in production environments. Internally, stack stores the elements in a dynamic growing semi-circular doubly linked list of arrays.
+Package stack implements a very fast and efficient general purpose Last-In-First-Out (LIFO) stack data structure that is specifically optimized to perform when used by Microservices and serverless services running in production environments. Internally, stack stores the elements in a dynamic growing semi-circular inverted singly linked list of arrays.
 
 
 ## Install
@@ -64,7 +64,7 @@ See the [benchmark tests](https://github.com/ef-ds/stack-bench-tests/blob/master
 
 
 ## Performance
-Stack has constant time (O(1)) on all its operations (Push/Pop/Back/Len). It's not amortized constant because stack never copies more than 256 (maxInternalSliceSize/sliceGrowthFactor) items and when it expands or grow, it never does so by more than 1024 (maxInternalSliceSize) items in a single operation.
+Stack has constant time (O(1)) on all its operations (Push/Pop/Back/Len). It's not amortized constant because stack never copies more than 256 (maxInternalSliceSize/2) items and when it expands or grow, it never does so by more than 512 (maxInternalSliceSize) items in a single operation.
 
 Stack offers either the best or very competitive performance across all test sets, suites and ranges.
 
@@ -74,9 +74,9 @@ See [performance](https://github.com/ef-ds/stack-bench-tests/blob/master/PERFORM
 
 
 ## Design
-The Efficient Data Structures (ef-ds) stack employs a new, modern stack design: a semi-circular shaped, linked slices design.
+The Efficient Data Structures (ef-ds) stack employs a new, modern stack design: a dynamic growing semi-circular inverted singly linked list of slices.
 
-That means the [LIFO stack](https://en.wikipedia.org/wiki/Stack_(abstract_data_type)) is a [doubly-linked list](https://en.wikipedia.org/wiki/Doubly_linked_list) where each node value is a fixed size [slice](https://tour.golang.org/moretypes/7). It is semi-circular in shape because the first node in the linked list points to itself, but the last one points to nil.
+That means the [LIFO stack](https://en.wikipedia.org/wiki/Stack_(abstract_data_type)) is a [singly-linked list](https://en.wikipedia.org/wiki/Singly_linked_list) where each node value is a fixed size [slice](https://tour.golang.org/moretypes/7). It is inverted singly linked list because each node points only to the previous one (instead of next) and it is semi-circular in shape because the first node in the linked list points to itself, but the last one points to nil.
 
 ![ns/op](testdata/stack.jpg?raw=true "stack Design")
 
@@ -151,7 +151,7 @@ One sofware engineer can't change the world him/herself, but a whole bunch of us
 
 
 ## Competition
-We're extremely interested in improving stack. Please let us know your suggestions for possible improvements and if you know of other high performance stacks not tested here, let us know and we're very glad to benchmark them.
+We're extremely interested in improving stack and we're on an endless quest for better efficiency and more performance. Please let us know your suggestions for possible improvements and if you know of other high performance stacks not tested here, let us know and we're very glad to benchmark them.
 
 
 ## Releases
