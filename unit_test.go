@@ -21,7 +21,6 @@
 package stack
 
 import (
-	"fmt"
 	"testing"
 )
 
@@ -54,40 +53,28 @@ func TestPushPopShouldHaveAllInternalLinksInARing(t *testing.T) {
 	pushValue, extraAddedItems := 0, 0
 
 	// Push maxInternalSliceSize items to fill the first array
-	expectedHeadSliceSize := firstSliceSize
 	for i := 1; i <= maxInternalSliceSize; i++ {
 		pushValue++
 		s.Push(pushValue)
-
-		if pushValue >= expectedHeadSliceSize {
-			expectedHeadSliceSize *= sliceGrowthFactor
-		}
 	}
 
 	// Push 1 extra item to force the creation of a new array
 	pushValue++
 	s.Push(pushValue)
 	extraAddedItems++
-	checkLinks(t, s, pushValue, maxInternalSliceSize, maxInternalSliceSize, s.tail, s.head, nil, s.head)
+	checkLinks(t, s, pushValue, maxInternalSliceSize)
 
 	// Push another maxInternalSliceSize-1 to fill the second array
 	for i := 1; i <= maxInternalSliceSize-1; i++ {
 		pushValue++
 		s.Push(pushValue)
-		checkLinks(t, s, pushValue, maxInternalSliceSize, maxInternalSliceSize, s.tail, s.head, nil, s.head)
+		checkLinks(t, s, pushValue, maxInternalSliceSize)
 	}
 
 	// Push 1 extra item to force the creation of a new array (3 total)
 	pushValue++
 	s.Push(pushValue)
-	checkLinks(t, s, pushValue, maxInternalSliceSize, maxInternalSliceSize, s.tail.p, s.head, nil, s.head.n)
-	/// Check middle links
-	if s.head.n.n != s.tail {
-		t.Error("Expected: s.head.n.n == s.tail; Got: s.head.n.n != s.tail")
-	}
-	if s.head.n.p != s.head {
-		t.Error("Expected: s.head.n.p == s.head; Got: s.head.n.p != s.head")
-	}
+	checkLinks(t, s, pushValue, maxInternalSliceSize)
 
 	// Check final len after all pushes
 	if s.Len() != maxInternalSliceSize+maxInternalSliceSize+extraAddedItems {
@@ -101,14 +88,7 @@ func TestPushPopShouldHaveAllInternalLinksInARing(t *testing.T) {
 		t.Errorf("Expected: %d; Got: %d", popValue, v)
 	}
 	popValue--
-	checkLinks(t, s, popValue, maxInternalSliceSize, maxInternalSliceSize, s.tail, s.head, s.tail.n, s.head)
-	//Check last slice links (not tail anymore; tail is the middle one)
-	if s.tail.n.n != nil {
-		t.Error("Expected: s.tail.n.n == nil; Got: s.tail.n.n != nil")
-	}
-	if s.tail.n.p != s.tail {
-		t.Error("Expected: s.tail.n.p == s.tail; Got: s.tail.n.p != s.tail")
-	}
+	checkLinks(t, s, popValue, maxInternalSliceSize)
 
 	// Pop maxInternalSliceSize-1 items to empty the tail (middle) slice
 	for i := 1; i <= maxInternalSliceSize-1; i++ {
@@ -116,14 +96,7 @@ func TestPushPopShouldHaveAllInternalLinksInARing(t *testing.T) {
 			t.Errorf("Expected: %d; Got: %d", popValue, v)
 		}
 		popValue--
-		checkLinks(t, s, popValue, maxInternalSliceSize, maxInternalSliceSize, s.tail, s.head, s.tail.n, s.head)
-		/// Check last slice links
-		if s.tail.n.n != nil {
-			t.Error("Expected: s.tail.n.n == nil; Got: s.tail.n.n != nil")
-		}
-		if s.tail.n.p != s.tail {
-			t.Error("Expected: s.tail.n.p == s.tail; Got: s.tail.n.p != s.tail")
-		}
+		checkLinks(t, s, popValue, maxInternalSliceSize)
 	}
 
 	// Pop one extra item to force moving the tail to the head (first) slice. This also means the old tail
@@ -132,21 +105,7 @@ func TestPushPopShouldHaveAllInternalLinksInARing(t *testing.T) {
 		t.Errorf("Expected: %d; Got: %d", popValue, v)
 	}
 	popValue--
-	checkLinks(t, s, popValue, maxInternalSliceSize, maxInternalSliceSize, s.tail.n, s.head, s.tail.n, s.head)
-	/// Check middle links
-	if s.head.n.n != s.tail.n.n {
-		t.Error("Expected: s.head.n.n == s.tail.n.n; Got: s.head.n.n != s.tail.n.n")
-	}
-	if s.head.n.p != s.tail {
-		t.Error("Expected: s.head.n.p == s.tail; Got: s.head.n.p != s.tail")
-	}
-	//Check last slice links (not tail anymore; tail is the first one)
-	if s.head.n.n.n != nil {
-		t.Error("Expected: s.head.n.n.n == nil; Got: s.head.n.n.n != nil")
-	}
-	if s.head.n.n.p != s.tail.n {
-		t.Error("Expected: s.head.n.n.p == s.tail.n; Got: s.head.n.n.p != s.tail.n")
-	}
+	checkLinks(t, s, popValue, maxInternalSliceSize)
 
 	// Pop maxFirstSliceSize-1 items to empty the head (first) slice
 	for i := 1; i <= maxInternalSliceSize; i++ {
@@ -154,21 +113,7 @@ func TestPushPopShouldHaveAllInternalLinksInARing(t *testing.T) {
 			t.Errorf("Expected: %d; Got: %d", popValue, v)
 		}
 		popValue--
-		checkLinks(t, s, popValue, maxInternalSliceSize, maxInternalSliceSize, s.tail.n, s.head, s.tail.n, s.head)
-		/// Check middle links
-		if s.head.n.n != s.tail.n.n {
-			t.Error("Expected: s.head.n.n == s.tail.n.n; Got: s.head.n.n != s.tail.n.n")
-		}
-		if s.head.n.p != s.tail {
-			t.Error("Expected: s.head.n.p == s.tail; Got: s.head.n.p != s.tail")
-		}
-		//Check last slice links (not tail anymore; tail is the first one)
-		if s.head.n.n.n != nil {
-			t.Error("Expected: s.head.n.n.n == nil; Got: s.head.n.n.n != nil")
-		}
-		if s.head.n.n.p != s.tail.n {
-			t.Error("Expected: s.head.n.n.p == s.tail.n; Got: s.head.n.n.p != s.tail.n")
-		}
+		checkLinks(t, s, popValue, maxInternalSliceSize)
 	}
 
 	// The stack shoud be empty
@@ -178,39 +123,18 @@ func TestPushPopShouldHaveAllInternalLinksInARing(t *testing.T) {
 	if _, ok := s.Back(); ok {
 		t.Error("Expected: false; Got: true")
 	}
-	if cap(s.head.v) != maxInternalSliceSize {
-		t.Errorf("Expected: %d; Got: %d", maxInternalSliceSize, cap(s.head.v))
-	}
 	if cap(s.tail.v) != maxInternalSliceSize {
 		t.Errorf("Expected: %d; Got: %d", maxInternalSliceSize, cap(s.tail.v))
-	}
-	if s.head.n == s.tail.p {
-		t.Error("Expected: s.head.n != s.tail.p; Got: s.head.n == s.tail.p")
 	}
 }
 
 // Helper methods-----------------------------------------------------------------------------------
 
 // Checks the internal slices and its links.
-func checkLinks(t *testing.T, s *Stack, length, headSliceSize, tailSliceSize int, headNext, headPrevious, tailNext, tailPrevious *node) {
+func checkLinks(t *testing.T, s *Stack, length, tailSliceSize int) {
 	t.Helper()
 	if s.Len() != length {
 		t.Errorf("Unexpected length; Expected: %d; Got: %d", length, s.Len())
-	}
-	if cap(s.head.v) != headSliceSize {
-		t.Errorf("Unexpected head size; Expected: %d; Got: %d", headSliceSize, len(s.head.v))
-	}
-	if s.head.n != headNext {
-		t.Error("Unexpected head node; Expected: s.head.n == headNext; Got: s.head.n != headNext")
-	}
-	if s.head.p != headPrevious {
-		t.Error("Unexpected head; Expected: s.head.p == headPrevious; Got: s.head.p != headPrevious")
-	}
-	if s.tail.n != tailNext {
-		t.Error("Unexpected tailNext; Expected: s.tail.n == tailNext; Got: s.tail.n != tailNext")
-	}
-	if s.tail.p != tailPrevious {
-		t.Error("Unexpected tailPrevious; Expected: s.tail.p == tailPrevious; Got: s.tail.p != tailPrevious")
 	}
 	if cap(s.tail.v) != tailSliceSize {
 		t.Errorf("Unexpected tail size; Expected: %d; Got: %d", tailSliceSize, len(s.tail.v))
@@ -231,7 +155,7 @@ func assertInvariants(t *testing.T, s *Stack, val func(i int) interface{}) {
 	if s == nil {
 		fail("non-nil stack", s, "non-nil")
 	}
-	if s.head == nil {
+	if s.tail == nil {
 		// Zero value.
 		if s.tail != nil {
 			fail("nil tail when zero", s.tail, nil)
@@ -241,85 +165,7 @@ func assertInvariants(t *testing.T, s *Stack, val func(i int) interface{}) {
 		}
 		return
 	}
-
-	spareLinkCount := 0
-	inStack := true
-	elemCount := 0
-	smallNodeCount := 0
-	index := 0
-	walkLinks(t, s, func(n *node) {
-		if len(n.v) < maxInternalSliceSize {
-			smallNodeCount++
-			if len(n.v) > maxInternalSliceSize {
-				fail("first node within bounds", len(n.v), maxInternalSliceSize)
-			}
-		}
-		if len(n.v) > maxInternalSliceSize {
-			fail("slice too big", len(n.v), maxInternalSliceSize)
-		}
-		for i, v := range n.v {
-			failElem := func(what string, got, want interface{}) {
-				fail(fmt.Sprintf("at elem %d, node %p, %s", i, n, what), got, want)
-				t.FailNow()
-			}
-			if !inStack {
-				if v != nil {
-					failElem("all values outside queue nil", v, nil)
-				}
-				continue
-			}
-			if v != nil {
-				if val != nil {
-					want := val(index)
-					if want != v {
-						failElem(fmt.Sprintf("element %d has expected value", index), v, want)
-					}
-				}
-				elemCount++
-				index++
-			}
-		}
-		if !inStack {
-			spareLinkCount++
-		}
-		if n == s.tail {
-			inStack = false
-		}
-	})
-	if inStack {
-		// We never encountered the tail pointer.
-		t.Errorf("tail does not point to element in list")
-	}
-	if elemCount != s.len {
-		fail("element count == s.len", elemCount, s.len)
-	}
-	if smallNodeCount > 1 {
-		fail("only one first node", smallNodeCount, 1)
-	}
 	if t.Failed() {
 		t.FailNow()
-	}
-}
-
-// walkLinks calls f for each node in the linked list.
-// It also checks link invariants:
-func walkLinks(t *testing.T, s *Stack, f func(n *node)) {
-	t.Helper()
-	fail := func(what string, got, want interface{}) {
-		t.Errorf("link invariant %s fail; got %v want %v", what, got, want)
-	}
-	n := s.head
-	for {
-		if n.n != nil && n.n.p != n {
-			fail("node.n.p == node", n.n.p, n)
-		}
-		if n.p.n != nil && n.p.n != n {
-			fail("node.p.n == node", n.p.n, n)
-		}
-		f(n)
-		n = n.n
-		if n == nil {
-			break
-		}
 	}
 }
