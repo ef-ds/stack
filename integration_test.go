@@ -27,163 +27,163 @@ import (
 )
 
 const (
-	pushCount = 1024 * 3 // Push to fill at least 3 internal slices
+	pushCount = 512 * 3 // Push to fill at least 3 internal slices
 )
 
 func TestFillStackShouldRetrieveAllElementsInOrder(t *testing.T) {
-	var d stack.Stack
+	var s stack.Stack
 
 	for i := 0; i < pushCount; i++ {
-		d.Push(i)
+		s.Push(i)
 	}
 	//fmt.Println(spew.Sdump(d))
 	for i := pushCount - 1; i >= 0; i-- {
-		if v, ok := d.Pop(); !ok || v.(int) != i {
+		if v, ok := s.Pop(); !ok || v.(int) != i {
 			t.Errorf("Expected: %d; Got: %d", i, v)
 		}
 	}
-	if d.Len() != 0 {
-		t.Errorf("Expected: %d; Got: %d", 0, d.Len())
+	if s.Len() != 0 {
+		t.Errorf("Expected: %d; Got: %d", 0, s.Len())
 	}
 }
 
 func TestRefillStackShouldRetrieveAllElementsInOrder(t *testing.T) {
-	var d stack.Stack
+	var s stack.Stack
 
 	for i := 0; i < refillCount; i++ {
 		for j := 0; j < pushCount; j++ {
-			d.Push(j)
+			s.Push(j)
 		}
 		for j := pushCount - 1; j >= 0; j-- {
-			if v, ok := d.Pop(); !ok || v.(int) != j {
+			if v, ok := s.Pop(); !ok || v.(int) != j {
 				t.Errorf("Expected: %d; Got: %d", i, v)
 			}
 		}
-		if d.Len() != 0 {
-			t.Errorf("Expected: %d; Got: %d", 0, d.Len())
+		if s.Len() != 0 {
+			t.Errorf("Expected: %d; Got: %d", 0, s.Len())
 		}
 	}
 }
 
 func TestRefillFullStackShouldRetrieveAllElementsInOrder(t *testing.T) {
-	var d stack.Stack
+	var s stack.Stack
 	for i := 0; i < pushCount; i++ {
-		d.Push(i)
+		s.Push(i)
 	}
 
 	for i := 0; i < refillCount; i++ {
 		for j := 0; j < pushCount; j++ {
-			d.Push(j)
+			s.Push(j)
 		}
 		for j := pushCount - 1; j >= 0; j-- {
-			if v, ok := d.Pop(); !ok || v.(int) != j {
+			if v, ok := s.Pop(); !ok || v.(int) != j {
 				t.Errorf("Expected: %d; Got: %d", j, v)
 			}
 		}
-		if d.Len() != pushCount {
-			t.Errorf("Expected: %d; Got: %d", pushCount, d.Len())
+		if s.Len() != pushCount {
+			t.Errorf("Expected: %d; Got: %d", pushCount, s.Len())
 		}
 	}
 }
 
 func TestSlowIncreaseStackShouldRetrieveAllElementsInOrder(t *testing.T) {
-	var d stack.Stack
+	var s stack.Stack
 
 	count := 0
 	for i := 0; i < pushCount; i++ {
 		count++
-		d.Push(count)
+		s.Push(count)
 		count++
-		d.Push(count)
-		if v, ok := d.Pop(); !ok || v.(int) != count {
+		s.Push(count)
+		if v, ok := s.Pop(); !ok || v.(int) != count {
 			t.Errorf("Expected: %d; Got: %d", count, v)
 		}
 	}
-	if d.Len() != pushCount {
-		t.Errorf("Expected: %d; Got: %d", pushCount, d.Len())
+	if s.Len() != pushCount {
+		t.Errorf("Expected: %d; Got: %d", pushCount, s.Len())
 	}
 }
 
 func TestSlowDecreaseStackShouldRetrieveAllElementsInOrder(t *testing.T) {
-	var d stack.Stack
+	var s stack.Stack
 	push := 0
 	for i := 0; i < pushCount; i++ {
-		d.Push(push)
+		s.Push(push)
 		push++
 	}
 
 	count := push
 	for i := 0; i < pushCount-1; i++ {
 		count--
-		if v, ok := d.Pop(); !ok || v.(int) != count {
+		if v, ok := s.Pop(); !ok || v.(int) != count {
 			t.Errorf("Expected: %d; Got: %d", count, v)
 		}
 		count--
-		if v, ok := d.Pop(); !ok || v.(int) != count {
+		if v, ok := s.Pop(); !ok || v.(int) != count {
 			t.Errorf("Expected: %d; Got: %d", count, v)
 		}
 
-		d.Push(count)
+		s.Push(count)
 		count++
 	}
 	count--
-	if v, ok := d.Pop(); !ok || v.(int) != count {
+	if v, ok := s.Pop(); !ok || v.(int) != count {
 		t.Errorf("Expected: %d; Got: %d", count, v)
 	}
-	if d.Len() != 0 {
-		t.Errorf("Expected: %d; Got: %d", 0, d.Len())
+	if s.Len() != 0 {
+		t.Errorf("Expected: %d; Got: %d", 0, s.Len())
 	}
 }
 
 func TestStableStackShouldRetrieveAllElementsInOrder(t *testing.T) {
-	var d stack.Stack
+	var s stack.Stack
 
 	for i := 0; i < pushCount; i++ {
-		d.Push(i)
-		if v, ok := d.Pop(); !ok || v.(int) != i {
+		s.Push(i)
+		if v, ok := s.Pop(); !ok || v.(int) != i {
 			t.Errorf("Expected: %d; Got: %d", i, v)
 		}
 	}
-	if d.Len() != 0 {
-		t.Errorf("Expected: %d; Got: %d", 0, d.Len())
+	if s.Len() != 0 {
+		t.Errorf("Expected: %d; Got: %d", 0, s.Len())
 	}
 }
 
 func TestStableFullStackShouldRetrieveAllElementsInOrder(t *testing.T) {
-	var d stack.Stack
+	var s stack.Stack
 	for i := 0; i < pushCount; i++ {
-		d.Push(i)
+		s.Push(i)
 	}
 
 	count := 0
 	for i := 0; i < pushCount; i++ {
-		d.Push(i)
-		if v, ok := d.Pop(); !ok || v.(int) != count {
+		s.Push(i)
+		if v, ok := s.Pop(); !ok || v.(int) != count {
 			t.Errorf("Expected: %d; Got: %d", count, v)
 		}
 		count++
 	}
-	if d.Len() != pushCount {
-		t.Errorf("Expected: %d; Got: %d", pushCount, d.Len())
+	if s.Len() != pushCount {
+		t.Errorf("Expected: %d; Got: %d", pushCount, s.Len())
 	}
 }
 
 func TestPushFrontPopRefillWith0ToPushCountItemsShouldReturnAllValuesInOrder(t *testing.T) {
-	var d stack.Stack
+	var s stack.Stack
 
 	for i := 0; i < refillCount; i++ {
 		for k := 0; k < pushCount; k++ {
 			for j := 0; j < k; j++ {
-				d.Push(j)
+				s.Push(j)
 			}
 			for j := k; j > 0; j-- {
-				v, ok := d.Pop()
+				v, ok := s.Pop()
 				if !ok || v == nil || v.(int) != j-1 {
 					t.Errorf("Expected: %d; Got: %d", j-1, v)
 				}
 			}
-			if d.Len() != 0 {
-				t.Errorf("Expected: %d; Got: %d", 0, d.Len())
+			if s.Len() != 0 {
+				t.Errorf("Expected: %d; Got: %d", 0, s.Len())
 			}
 		}
 	}
